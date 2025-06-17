@@ -4,8 +4,7 @@ use crate::cpu::CPU;
 use crate::opcodes;
 use std::collections::HashMap;
 
-pub fn trace(cpu: &CPU) -> String {
-    // Reads the current instruction at the CPU’s program_counter.
+pub fn trace(cpu: &mut CPU) -> String {
     let ref opscodes: HashMap<u8, &'static opcodes::OpCode> = *opcodes::OPCODES_MAP;
 
     let code = cpu.mem_read(cpu.program_counter);
@@ -15,18 +14,14 @@ pub fn trace(cpu: &CPU) -> String {
     let mut hex_dump = vec![];
     hex_dump.push(code);
 
-    // Calculates the target memory address and value at that address if applicable.
     let (mem_addr, stored_value) = match ops.mode {
         AddressingMode::Immediate | AddressingMode::NoneAddressing => (0, 0),
         _ => {
-            // adds 1 to begin (which is the current program_counter) because
-            // it wants to skip over the opcode byte and point to the operand bytes.
-            let addr = cpu.get_absolute_address(&ops.mode, begin + 1);
+            let (addr, _) = cpu.get_absolute_address(&ops.mode, begin + 1);
             (addr, cpu.mem_read(addr))
         }
     };
 
-    // Constructs a human-readable string.
     let tmp = match ops.len {
         1 => match ops.code {
             0x0a | 0x4a | 0x2a | 0x6a => format!("A "),
@@ -143,7 +138,7 @@ mod test {
 
     #[test]
     fn test_format_trace() {
-        let mut bus = Bus::new(test_rom(vec![]));
+        let mut bus = Bus::new(test_rom());
         bus.mem_write(100, 0xa2);
         bus.mem_write(101, 0x01);
         bus.mem_write(102, 0xca);
@@ -175,7 +170,7 @@ mod test {
 
     #[test]
     fn test_format_mem_access() {
-        let mut bus = Bus::new(test_rom(vec![]));
+        let mut bus = Bus::new(test_rom());
         // ORA ($33), Y
         bus.mem_write(100, 0x11);
         bus.mem_write(101, 0x33);
