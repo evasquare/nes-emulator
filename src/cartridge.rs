@@ -10,8 +10,20 @@ pub enum Mirroring {
 }
 
 pub struct Rom {
+    /**
+     * This is the part of the ROM that contains the 6502 machine code
+     * — the actual game logic, such as movement, physics, scoring, etc.
+     */
     pub prg_rom: Vec<u8>,
+    /**
+     * This contains graphics data — specifically, the 8x8 pixel tiles
+     * used to draw sprites and backgrounds.
+     */
     pub chr_rom: Vec<u8>,
+    /**
+     * A mapper is a piece of hardware in NES cartridges that extends
+     * the capabilities of the NES beyond its basic memory layout.
+     */
     pub mapper: u8,
     pub screen_mirroring: Mirroring,
 }
@@ -48,8 +60,8 @@ impl Rom {
         Ok(Rom {
             prg_rom: raw[prg_rom_start..(prg_rom_start + prg_rom_size)].to_vec(),
             chr_rom: raw[chr_rom_start..(chr_rom_start + chr_rom_size)].to_vec(),
-            mapper: mapper,
-            screen_mirroring: screen_mirroring,
+            mapper,
+            screen_mirroring,
         })
     }
 }

@@ -2,12 +2,11 @@ pub mod bus;
 pub mod cartridge;
 pub mod cpu;
 pub mod opcodes;
+pub mod ppu;
 pub mod trace;
 
-use cpu::Mem;
 use cpu::CPU;
-use rand::Rng;
-use sdl2::{event::Event, keyboard::Keycode, pixels::Color, pixels::PixelFormatEnum, EventPump};
+use sdl2::pixels::PixelFormatEnum;
 use trace::trace;
 
 use crate::bus::Bus;
